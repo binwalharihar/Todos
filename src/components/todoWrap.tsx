@@ -3,12 +3,13 @@ import { Todo } from './todo';
 import { TodoForm } from './todoForm';
 import { v4 as uuidv4 } from 'uuid';
 import { EditTodoForm } from './editTodo';
+import { sortByPriority } from './PriorityQueue'; // Import the sorting function
 
 export const Todowrap = () => {
   const [todos, setTodos] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
-  const [filterPriority, setFilterPriority] = useState('All'); // Priority filter state
+  const [filterPriority, setFilterPriority] = useState('All');
 
   const addTodo = (newTask) => {
     setTodos([
@@ -47,7 +48,6 @@ export const Todowrap = () => {
     setFilterStatus(status);
   };
 
-  // Filter and sort todos based on search term, status, and priority
   const filteredTodos = todos
     .filter(
       (todo) =>
@@ -64,6 +64,9 @@ export const Todowrap = () => {
       return todo.priority === filterPriority;
     });
 
+  // Sort the filtered todos based on priority
+  const sortedTodos = sortByPriority(filteredTodos);
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-4">Manage Tasks</h1>
@@ -79,60 +82,14 @@ export const Todowrap = () => {
         />
       </div>
 
-      {/* Filter buttons */}
-      <div className="mb-4 flex space-x-2">
-        <button
-          onClick={() => handleFilter('All')}
-          className={`px-4 py-2 rounded ${
-            filterStatus === 'All'
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-200 text-black'
-          }`}>
-          All
-        </button>
-        <button
-          onClick={() => handleFilter('Completed')}
-          className={`px-4 py-2 rounded ${
-            filterStatus === 'Completed'
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-200 text-black'
-          }`}>
-          Completed
-        </button>
-        <button
-          onClick={() => handleFilter('Incomplete')}
-          className={`px-4 py-2 rounded ${
-            filterStatus === 'Incomplete'
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-200 text-black'
-          }`}>
-          Incomplete
-        </button>
-      </div>
-
-      {/* Priority Dropdown */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">Filter by Priority:</label>
-        <select
-          value={filterPriority}
-          onChange={(e) => setFilterPriority(e.target.value)}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-          <option value="All">All</option>
-          <option value="High">High</option>
-          <option value="Medium">Medium</option>
-          <option value="Low">Low</option>
-        </select>
-      </div>
-
-      {/* Add Todo Form */}
       <TodoForm addTodo={addTodo} />
 
       {/* Task List */}
       <div className="mt-8 space-y-4">
-        {filteredTodos.length === 0 ? (
+        {sortedTodos.length === 0 ? (
           <p className="text-gray-600">No tasks available. Add a task to get started!</p>
         ) : (
-          filteredTodos.map((todo) =>
+          sortedTodos.map((todo) =>
             todo.isEditing ? (
               <EditTodoForm key={todo.id} editTodo={editTask} task={todo} />
             ) : (
