@@ -1,15 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Todo } from './todo';
 import { TodoForm } from './todoForm';
 import { v4 as uuidv4 } from 'uuid';
 import { EditTodoForm } from './editTodo';
-import { sortByPriority } from './PriorityQueue'; // Import the sorting function
+import { sortByPriority } from './PriorityQueue';
+import { BinarySearchTree } from './BST'; 
 
 export const Todowrap = () => {
   const [todos, setTodos] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [filterPriority, setFilterPriority] = useState('All');
+
+  // Initialize BST for searching
+  const bst = new BinarySearchTree();
+
+  // Add todos to BST whenever todos change
+  useEffect(() => {
+    // Clear and reinsert todos into BST
+    bst.root = null;
+    todos.forEach(todo => bst.insert(todo.title.toLowerCase(), todo));
+  }, [todos]);
 
   const addTodo = (newTask) => {
     setTodos([
@@ -48,12 +59,12 @@ export const Todowrap = () => {
     setFilterStatus(status);
   };
 
+  // Perform the search with BST
+  const searchResults = bst.search(searchTerm.toLowerCase());
+
+  // Filter and sort tasks based on search results, status, and priority
   const filteredTodos = todos
-    .filter(
-      (todo) =>
-        todo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        todo.description.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    .filter(todo => searchResults.includes(todo))
     .filter((todo) => {
       if (filterStatus === 'Completed') return todo.completed;
       if (filterStatus === 'Incomplete') return !todo.completed;
