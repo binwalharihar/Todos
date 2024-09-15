@@ -1,8 +1,9 @@
 [build]
+  base = "/opt/build/repo"
   command = "npm run build"
-  publish = "build"
-base="/"
+  publish = "/opt/build/repo/build"
+
 [[redirects]]
-from="/*"
-to="/index.html"
-status=200
+  from = "/*"
+  to = "/index.html"
+  status = 200
