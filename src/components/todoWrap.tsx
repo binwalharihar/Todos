@@ -10,7 +10,6 @@ export const Todowrap = () => {
   const [todos, setTodos] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
-  const [filterPriority, setFilterPriority] = useState('All');
 
   // Initialize BST for searching
   const bst = new BinarySearchTree();
@@ -70,10 +69,7 @@ export const Todowrap = () => {
       if (filterStatus === 'Incomplete') return !todo.completed;
       return true;
     })
-    .filter((todo) => {
-      if (filterPriority === 'All') return true;
-      return todo.priority === filterPriority;
-    });
+   
 
   // Sort the filtered todos based on priority
   const sortedTodos = sortByPriority(filteredTodos);
